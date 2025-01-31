@@ -16,7 +16,21 @@ pipeline {
                     sh 'terraform init'
                     sh 'terraform validate'
                     sh 'terraform plan'
-                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+        stage('Terraform Init and Apply via SSH') {
+            steps {
+                script {
+                    sshagent(['terraform-ssh-key']) {
+                        sh '''
+                            export AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials
+                            cd /path/to/terraform
+                            terraform init
+                            terraform apply -auto-approve
+                        '''
+                    }
                 }
             }
         }
